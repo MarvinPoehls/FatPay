@@ -1,0 +1,23 @@
+{
+  "name": "fatchip/fatpay",
+  "description": "The FATPay OXID Payment-Plugin",
+  "type": "oxideshop-module",
+  "authors": [
+    {
+      "name": "Fatchip",
+      "email": "support@fatchip.de",
+      "homepage": "https://www.fatchip.de/"
+    }
+  ],
+  "minimum-stability": "dev",
+  "extra": {
+    "oxideshop": {
+      "target-directory": "Fatchip/FatPay"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Fatchip\\FatPay\\": ""
+    }
+  }
+}

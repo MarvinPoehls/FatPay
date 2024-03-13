@@ -1,0 +1,22 @@
+<phpunit backupGlobals="true"
+         backupStaticAttributes="false"
+         cacheTokens="true"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         verbose="false">
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../src/extend/</directory>
+            <directory suffix=".php">../src/Core/</directory>
+            <directory suffix=".php">../src/Helper/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
