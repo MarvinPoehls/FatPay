@@ -31,12 +31,14 @@ class PaymentGateway extends PaymentGateway_parent
 
     protected function fcRedirectToPaymentPortal($amount)
     {
+        $paymentPortalLocation = "/modules/Fatchip/FatPay";
+        
         $redirect = $this->fcGetUrl("order", $this->fcGetAdditionalParameters(), true);
         $cancelRedirect = $this->fcGetUrl("payment", ["fnc" => "fcCancelOrder"], true);
 
         Registry::getSession()->setVariable('fcIsRedirected', true);
         Registry::getSession()->setVariable('fcBasketPrice', Registry::getSession()->getBasket()->getPrice());
-        Registry::getUtils()->redirect("/fatpaymentportal/index.php?checkoutPrice=$amount&redirect=$redirect&cancelRedirect=$cancelRedirect&data=".json_encode($this->fcGetPaymentData()), false);
+        Registry::getUtils()->redirect("$paymentPortalLocation/fatpaymentportal/index.php?checkoutPrice=$amount&redirect=$redirect&cancelRedirect=$cancelRedirect&data=".json_encode($this->fcGetPaymentData()), false);
     }
 
     protected function fcGetAdditionalParameters(): array
