@@ -1,7 +1,7 @@
 function submitPayment(storeUrl, data)
 {
     $.ajax({
-        url: window.location.href + "/../../fatpayapi/index.php",
+        url: window.location.href.split('?')[0] + "/../../fatpayapi/index.php",
         type: "POST",
         data: data,
         success: function(data) {
@@ -13,7 +13,7 @@ function submitPayment(storeUrl, data)
 function evaluateApiReturn(redirectUrl, data) {
     if(!isValidUrl(redirectUrl)){
         let errormessage = "We couldn't redirect you back to the store :(. However, the payment process is complete and you can now leave the page now.";
-        window.location.href += "/../index.php?controller=error&errormessage=" + errormessage;
+        window.location.href = window.location.href.split('?')[0] + "/../index.php?controller=error&errormessage=" + errormessage;
     }
 
     $('#loader').toggle();
