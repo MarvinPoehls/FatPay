@@ -55,7 +55,7 @@ $aModule = [
             'group' => 'SETTINGS_FATPAY',
             'name' => 'fatPayApiLocation',
             'type' => 'str',
-            'value' => '/fatpayapi'
+            'value' => 'modules/Fatchip/FatPay/fatpayapi'
         ],
     ],
     'events'       => [
