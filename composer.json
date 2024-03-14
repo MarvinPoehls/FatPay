@@ -2,7 +2,6 @@
   "name": "fatchip/fatpay",
   "description": "The FATPay OXID Payment-Plugin",
   "type": "oxideshop-module",
-  "version": "1.0.0",
   "authors": [
     {
       "name": "Fatchip",
@@ -18,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Fatchip\\FatPay\\": ""
+      "Fatchip\\FatPay\\": "./src"
     }
   }
 }
