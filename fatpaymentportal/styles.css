@@ -1,0 +1,35 @@
+.loader {
+    border: 4px solid rgba(255, 255, 255, 0.7);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 2.7s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (min-width: 768px) {
+    .h-md-50 {
+        height: 50% !important;
+    }
+}
+
+.position-bottom {
+    position: absolute;
+    bottom: 1rem;
+    width: calc(100% - 2 * 1rem);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 768px) {
+    .img-md-not-fluid {
+        width: auto;
+        max-width: none;
+        height: revert-layer;
+    }
+}
