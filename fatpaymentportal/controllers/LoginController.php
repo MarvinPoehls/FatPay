@@ -17,7 +17,7 @@ class LoginController extends BaseController
 
     public function getRedirect($controller)
     {
-        return "http://".$_SERVER['HTTP_HOST']."/fatpaymentportal/index.php?controller=".$controller;
+        return $_SERVER['PHP_SELF']."/../index.php?controller=".$controller;
     }
 
     public function validateLogin()

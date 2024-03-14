@@ -55,7 +55,7 @@ if (isset($_REQUEST['action'])) {
      $timeSinceLastLoginInSeconds = time() - $_SESSION["lastLogin"];
 
      if (($timeSinceLastLoginInSeconds > $maxLoggedInTimeInSeconds || !isset($_SESSION["lastLogin"])) && $controller != "login") {
-         header("Location: http://".$_SERVER['HTTP_HOST']."/fatpaymentportal/index.php?controller=login");
+        header("Location: ".$_SERVER['PHP_SELF']."?controller=login");
          exit;
      }
  }

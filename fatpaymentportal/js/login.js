@@ -8,6 +8,6 @@ function validateLogin() {
     var age = Math.abs(year - 1970);
 
     if (age >= 18) {
-        window.location.href = "http://" + document.location.hostname + "/fatpaymentportal/index.php?controller=checkout";
+        window.location.href += "../../fatpaymentportal/index.php?controller=checkout";
     }
 }
