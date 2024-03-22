@@ -1,10 +1,13 @@
 <?php
 
-namespace Src\Controller;
+namespace FatPayApi\Controller;
+
+use FatPayApi\Config;
+use FatPayApi\TransactionGateway;
 
 class TransactionController
 {
-    protected $gateway;
+    protected TransactionGateway $gateway;
 
     public function __construct($gateway)
     {
@@ -13,74 +16,49 @@ class TransactionController
 
     public function processRequest()
     {
-        $data = $_REQUEST;
-
-        switch ($data['payment_type']) {
-            case 'oxidfatpay':
-                $this->processFatpayRequest($data);
-                break;
-            case 'oxidfatredirect':
-                $this->processFatRedirectRequest($data);
-                break;
-            default:
+        if (isset($_REQUEST['id'])) {
+            $return = $this->getData($_REQUEST['id']);
+        } else {
+            $return = $this->saveData($_REQUEST);
         }
+
+        echo json_encode($return);
+        exit;
     }
 
-    protected function processFatpayRequest($data)
-    {
-        if (!array_key_exists("billing_lastname", $data)) {
-            echo json_encode([
-                "status" => "ERROR",
-                "errormessage" => "No lastname given."
-            ]);
-            exit;
-        }
-
-        if ($data["billing_lastname"] === "Failed") {
-            $data["status"] = "ERROR";
-            $data["errormessage"] = "Lastname is 'Failed'.";
-        }
-        else
-        {
-            $data["status"] = "APPROVED";
-            $data['errormessage'] = null;
-        }
-
-        $id = $this->gateway->create($data);
-
-        echo json_encode([
-            "status" => $data['status'],
-            "errormessage" => $data['errormessage'],
-            "id" => $id
-        ]);
-    }
-
-    protected function processFatredirectRequest($data)
+    protected function saveData(array $data)
     {
         if (!isset($data["billing_lastname"])) {
-            echo json_encode([
-                "status" => "ERROR",
-                "errormessage" => "No lastname given."
-            ]);
-            exit;
+            $errorMessage = "No billing lastname provided.";
+            return ["status" => "ERROR", "errormessage" => $errorMessage];
         }
 
         if ($data["billing_lastname"] === "Failed") {
             $data["status"] = "ERROR";
             $data["errormessage"] = "Lastname is 'Failed'.";
-        }
-        else
-        {
-            $data["status"] = "REDIRECT";
-            $data['errormessage'] = null;
+        } else {
+            $data["status"] = $this->getSuccessResponse($data['payment_type']);
+            $data["errormessage"] = null;
         }
 
         $id = $this->gateway->create($data);
 
-        echo json_encode([
-            "status" => $data['status'],
-            "errormessage" => $data['errormessage'],
-            "id" => $id,
-        ]);
+        return ["status" => $data['status'], "errormessage" => $data['errormessage'], "id" => $id];
+    }
+
+    protected function getData(string $id)
+    {
+        return $this->gateway->get($id);
+    }
+
+    public function getSuccessResponse($type)
+    {
+        switch ($type) {
+            case Config::FATREDIRECT:
+                return "REDIRECT";
+            case Config::FATPAY:
+            default:
+                return "APPROVED";
+        }
     }
 }

@@ -2,34 +2,35 @@
 
 namespace Fatchip\FatPay\Helper;
 
+use OxidEsales\Eshop\Core\Config;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ModuleSettingBridgeInterface;
+
 class Curl
 {
-    protected $ch;
-
-    public function __construct($url = null)
+    public function sendDataToApi(array $data)
     {
-        $this->ch = curl_init($url);
-        curl_setopt($this->ch, CURLOPT_POST, 1);
+        $config = oxNew(Config::class);
+
+        $apiLocation = strtolower($this->getModuleSetting('fatPayApiLocation'));
+        $url = $config->getShopUrl().$apiLocation."/index.php";
+
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        return json_decode(curl_exec($ch));
     }
 
-    public function setUrl($url)
+    protected function getModuleSetting($settingName)
     {
-        curl_setopt($this->ch, CURLOPT_URL, $url);
-    }
-
-    public function setPostField($array)
-    {
-        curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($array));
-    }
-
-    public function execute()
-    {
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-        return curl_exec($this->ch);
-    }
-
-    public function close()
-    {
-        curl_close($this->ch);
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        return $moduleSettingBridge->get($settingName, 'fatpay');
     }
 }

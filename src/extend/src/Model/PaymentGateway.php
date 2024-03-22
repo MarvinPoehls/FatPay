@@ -2,6 +2,8 @@
 
 namespace Fatchip\FatPay\extend\src\Model;
 
+use Fatchip\FatPay\Helper\Curl;
+use Fatchip\FatPay\Helper\Payment;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\ShopVersion;
@@ -12,33 +14,45 @@ class PaymentGateway extends PaymentGateway_parent
 {
     public function executePayment($amount,Order &$order)
     {
-        if ($order->oxorder__oxpaymenttype->value != "oxidfatredirect") {
-            return parent::executePayment($amount, $order);
+        $paymentId = $order->oxorder__oxpaymenttype->value;
+
+        if (Payment::isFatPayPayment($paymentId)) {
+            return $this->handleFatPayPayment($order, $paymentId);
         }
-        return $this->handleFatRedirectPayment($amount, $order);
+        return parent::executePayment($amount, $order);
     }
 
-    protected function handleFatRedirectPayment($amount, Order &$order)
+    protected function handleFatPayPayment(Order &$order, string $paymentId)
     {
-        if (!$order->fcIsReturnAfterPayment()) {
+        if ($order->fcIsReturnAfterPayment())
+            return true;
+
+        if ($paymentId == Payment::FATREDIRECT) {
             $order->fcSetOrderNumber();
             $order->fcSetTransactionId();
+        }
 
-            $this->fcRedirectToPaymentPortal($amount);
+        $curl = oxNew(Curl::class);
+        $response = $curl->sendDataToApi($this->fcGetPaymentData($paymentId));
+
+        if ($response->status === 'REDIRECT') {
+            $this->fcRedirectToPaymentPortal($response->id);
+        } else if ($response->status === 'APPROVED') {
+            return true;
+        } else {
+            $this->fcRedirectWithError('FC_ERROR_GENERIC');
         }
         return true;
     }
 
-    protected function fcRedirectToPaymentPortal($amount)
+    protected function fcRedirectToPaymentPortal(string $id)
     {
-        $paymentPortalLocation = "/modules/Fatchip/FatPay";
-        
-        $redirect = $this->fcGetUrl("order", $this->fcGetAdditionalParameters(), true);
-        $cancelRedirect = $this->fcGetUrl("payment", ["fnc" => "fcCancelOrder"], true);
+        $redirect = $this->fcGetUrl($this->fcGetAdditionalParameters(), true);
+        $cancelRedirect = $this->fcGetUrl(["cl" => "payment", "fnc" => "fcCancelOrder"], true);
 
         Registry::getSession()->setVariable('fcIsRedirected', true);
         Registry::getSession()->setVariable('fcBasketPrice', Registry::getSession()->getBasket()->getPrice());
-        Registry::getUtils()->redirect("$paymentPortalLocation/fatpaymentportal/index.php?checkoutPrice=$amount&redirect=$redirect&cancelRedirect=$cancelRedirect&data=".json_encode($this->fcGetPaymentData()), false);
+        Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl()."modules/fatchip/fatpay/fatpaymentportal/index.php?id=$id&redirect=$redirect&cancelRedirect=$cancelRedirect", false);
     }
 
     protected function fcGetAdditionalParameters(): array
@@ -60,12 +74,13 @@ class PaymentGateway extends PaymentGateway_parent
         $additionalParameters['ord_agb'] = true;
         $additionalParameters['rtoken'] = $session->getRemoteAccessToken();
 
+        $additionalParameters['cl'] = 'order';
         $additionalParameters['fnc'] = "fcHandlePaymentPortalReturn";
 
         return $additionalParameters;
     }
 
-    public function fcGetPaymentData()
+    public function fcGetPaymentData(string $paymentId)
     {
         $session = Registry::getSession();
         $basket = $session->getBasket();
@@ -101,7 +116,7 @@ class PaymentGateway extends PaymentGateway_parent
         $data['order_nr'] = $order->oxorder__oxordernr->value;
         $data['order_sum'] = $basket->getPriceForPayment();
         $data['currency'] = $basket->getBasketCurrency()->name;
-        $data['payment_type'] = 'oxidfatredirect';
+        $data['payment_type'] = $paymentId;
 
         return $data;
     }
@@ -112,14 +127,22 @@ class PaymentGateway extends PaymentGateway_parent
         return $container->getModuleConfiguration('fatpay')->getVersion();
     }
 
-    private function fcGetUrl($cl, $params = [], $encode = false): string
+    private function fcGetUrl($params = [], $encode = false): string
     {
-        $url = str_replace("redirected=1","",(empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/index.php?cl=$cl&");
+        $url = str_replace("redirected=1","",(empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/index.php?");
         $url .= http_build_query($params);
 
         if ($encode) {
             $url = rawurlencode($url);
         }
         return $url;
+    }
+
+    protected function fcRedirectWithError(string $errorLangId)
+    {
+        Registry::getSession()->setVariable('payerror', -50);
+        Registry::getSession()->setVariable('payerrortext', Registry::getLang()->translateString($errorLangId));
+        Registry::getUtils()->redirect(Registry::getConfig()->getCurrentShopUrl().'index.php?cl=payment');
+        return false;
     }
 }

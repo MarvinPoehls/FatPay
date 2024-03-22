@@ -1,7 +1,8 @@
 [{$smarty.block.parent}]
 
-[{if $sPaymentID == 'oxidfatredirect' || $sPaymentID == 'oxidfatpay'}]
+[{if $oView->fcIsFatPayPayment($sPaymentID)}]
     <script>
+        console.log('true')
         let [{$sPaymentID}]Label = document.getElementById('payment_[{$sPaymentID}]').nextElementSibling;
         let [{$sPaymentID}]LogoImg = createImage("[{$oViewConf->getModuleUrl('fatpay')}]/[{$sPaymentID}].png", "[{$sPaymentID}] Logo", 25);
         [{$sPaymentID}]Label.insertBefore([{$sPaymentID}]LogoImg, [{$sPaymentID}]Label.firstChild);

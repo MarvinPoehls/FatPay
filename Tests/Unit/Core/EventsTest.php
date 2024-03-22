@@ -2,6 +2,7 @@
 
 use Fatchip\FatPay\Core\Events;
 use Fatchip\FatPay\extend\src\Model\Payment;
+use Fatchip\FatPay\Helper\Payment as PaymentHelper;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 
@@ -9,11 +10,11 @@ class EventsTest extends \OxidEsales\TestingLibrary\UnitTestCase
 {
     public function testAddingPaymentMethod()
     {
-        $oxid = 'oxidfatpay';
+        $id = PaymentHelper::FATPAY;
 
         $expectedRow = [
             'OXACTIVE' => 1,
-            'OXDESC' => 'FatPay',
+            'OXDESC' => $id,
             'OXADDSUM' => 0,
             'OXADDSUMTYPE' => 'abs',
             'OXFROMBONI' => 0,
@@ -26,7 +27,7 @@ class EventsTest extends \OxidEsales\TestingLibrary\UnitTestCase
             ->get(QueryBuilderFactoryInterface::class)
             ->create();
 
-        $condition = $queryBuilder->expr()->eq('oxid', $queryBuilder->createNamedParameter($oxid));
+        $condition = $queryBuilder->expr()->eq('oxid', $queryBuilder->createNamedParameter($id));
 
         $queryBuilder
             ->delete('oxpayments')
@@ -36,7 +37,7 @@ class EventsTest extends \OxidEsales\TestingLibrary\UnitTestCase
         Events::onActivate();
 
         $fatpay = oxNew(Payment::class);
-        $fatpay->load($oxid);
+        $fatpay->load($id);
 
         $row = [
             'OXACTIVE' => $fatpay->oxpayments__oxactive->value,

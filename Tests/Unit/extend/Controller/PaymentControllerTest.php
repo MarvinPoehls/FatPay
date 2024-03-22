@@ -1,5 +1,6 @@
 <?php
 
+use Fatchip\FatPay\Helper\Payment;
 use Fatchip\FatPay\extend\src\Controller\PaymentController;
 use Fatchip\FatPay\Helper\Curl;
 use OxidEsales\Eshop\Core\Session;
@@ -26,7 +27,7 @@ class PaymentControllerTest extends \OxidEsales\TestingLibrary\UnitTestCase
         $this->paymentController->expects($this->once())
             ->method('fcGetRequestParameter')
             ->with('paymentid')
-            ->willReturn('oxidfatpay');
+            ->willReturn(Payment::FATPAY);
 
         $this->paymentController->expects($this->once())
             ->method('fcGetPaymentData')
@@ -59,7 +60,7 @@ class PaymentControllerTest extends \OxidEsales\TestingLibrary\UnitTestCase
         $this->paymentController->expects($this->once())
             ->method('fcGetRequestParameter')
             ->with('paymentid')
-            ->willReturn('oxidfatpay');
+            ->willReturn(Payment::FATPAY);
 
         $this->paymentController->expects($this->once())
             ->method('fcGetPaymentData')

@@ -3,23 +3,35 @@
 class CheckoutController extends BaseController
 {
     private $view = "checkout";
+    private $data;
+
+    public function __construct()
+    {
+        $this->data = $this->getDataFromApi($_SESSION['id']);
+    }
 
     public function getView()
     {
         return $this->view;
     }
 
-    public function getCheckoutPrice()
+    public function getData($key)
     {
-        if (!isset($_SESSION['checkoutPrice'])) {
-            $_SESSION['checkoutPrice'] = 0;
-        }
-
-        return number_format((float)$_SESSION['checkoutPrice'], 2, '.', '')."€";
+        return $this->data->$key;
     }
 
-    public function getData()
+    public function getDataFromApi(string $id)
     {
-        return $_SESSION['data'];
+        $url = "http://".$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'], '?')."/../../fatpayapi/index.php";
+
+        $curl = curl_init($url);
+
+        curl_setopt($curl, CURLOPT_POST, 1);
+
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(['id' => $id]));
+
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        return json_decode(curl_exec($curl));
     }
 }

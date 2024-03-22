@@ -2,6 +2,7 @@
 
 namespace Fatchip\FatPay\extend\src\Model;
 
+use Fatchip\FatPay\Helper\Payment;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
@@ -48,7 +49,7 @@ class Order extends Order_parent
 
     public function fcGetPaymentModel($sPaymentId)
     {
-        if ($sPaymentId !== "oxidfatredirect") {
+        if ($sPaymentId !== Payment::FATREDIRECT) {
             throw new \Exception('FatPay Payment method unknown - '.$sPaymentId);
         }
 

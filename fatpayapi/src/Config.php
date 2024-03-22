@@ -1,6 +1,6 @@
 <?php
 
-namespace Src;
+namespace FatPayApi;
 
 class Config
 {
@@ -8,4 +8,9 @@ class Config
     public const DATABASE = 'fatpay';
     public const USER = 'root';
     public const PASSWORD = 'dockerroot';
+
+    public const TABLENAME = "transactions";
+
+    public const FATPAY = "FatPay";
+    public const FATREDIRECT = "FatRedirect";
 }

@@ -1,14 +1,14 @@
 <?php
 
-use Src\Config;
-use Src\Database;
-use Src\Controller\TransactionController;
-use Src\TransactionGateway;
+use FatPayApi\Config;
+use FatPayApi\Database;
+use FatPayApi\Controller\TransactionController;
+use FatPayApi\TransactionGateway;
 
 require "vendor/autoload.php";
 
-set_error_handler("\Src\ErrorHandler::handleError");
-set_exception_handler("\Src\ErrorHandler::handleException");
+set_error_handler("\FatPayApi\ErrorHandler::handleError");
+set_exception_handler("\FatPayApi\ErrorHandler::handleException");
 
 header("Content-type: application/json; charset=UTF-8");
 

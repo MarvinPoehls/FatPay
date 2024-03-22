@@ -1,6 +1,6 @@
 <?php
 
-namespace Src;
+namespace FatPayApi;
 
 use mysqli;
 
@@ -44,10 +44,11 @@ class Database
     {
         $conn = $this->getConnection($this->database);
 
-        $sql = 'CREATE TABLE IF NOT EXISTS transactions (
-                    id int AUTO_INCREMENT PRIMARY KEY,
+        $sql = "CREATE TABLE IF NOT EXISTS ".Config::TABLENAME." (
+                    id VARCHAR(255) PRIMARY KEY,
                     status VARCHAR(10),
                     errormessage VARCHAR(255),
+                    payment_type VARCHAR(255),
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                     shopsystem VARCHAR(255) NOT NULL,
                     shopversion VARCHAR(10) NOT NULL,
@@ -70,8 +71,10 @@ class Database
                     order_nr VARCHAR(255),
                     amount DECIMAL(8,2),
                     currency VARCHAR(3)
-                    )';
+                )";
+
         $conn->query($sql);
+
         $conn->close();
     }
 

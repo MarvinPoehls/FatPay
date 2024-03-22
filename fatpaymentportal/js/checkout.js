@@ -1,16 +1,5 @@
-function submitPayment(storeUrl, data)
+function submitPayment(redirectUrl)
 {
-    $.ajax({
-        url: window.location.href.split('?')[0] + "/../../fatpayapi/index.php",
-        type: "POST",
-        data: data,
-        success: function(data) {
-            evaluateApiReturn(storeUrl, data);
-        }
-    });
-}
-
-function evaluateApiReturn(redirectUrl, data) {
     if(!isValidUrl(redirectUrl)){
         let errormessage = "We couldn't redirect you back to the store :(. However, the payment process is complete and you can now leave the page now.";
         window.location.href = window.location.href.split('?')[0] + "/../index.php?controller=error&errormessage=" + errormessage;
@@ -29,23 +18,10 @@ function evaluateApiReturn(redirectUrl, data) {
         fadeInImg.fadeOut(0).fadeIn(1000);
         fadeInImg.promise().done(function () {
             setTimeout(function(){
-                data.fcFinishedPayment = true;
-                redirectUrl += httpEncode(data);
-                window.location.href = redirectUrl;
+                window.location.href = redirectUrl + "&fcFinishedPayment=1";
             }, 200);
         });
     });
-}
-
-function httpEncode(array)
-{
-    let out = [];
-    for (let key in array) {
-        if (array.hasOwnProperty(key)) {
-            out.push(key + '=' + encodeURIComponent(array[key]));
-        }
-    }
-    return "&" + out.join('&');
 }
 
 function isValidUrl(string) {

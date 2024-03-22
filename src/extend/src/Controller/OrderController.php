@@ -2,6 +2,7 @@
 
 namespace Fatchip\FatPay\extend\src\Controller;
 
+use Fatchip\FatPay\Helper\Payment;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
@@ -11,7 +12,7 @@ class OrderController extends OrderController_parent
     public function fcHandlePaymentPortalReturn()
     {
         $payment = $this->getPayment();
-        if ($payment && $payment->oxpayments__oxid->value == "oxidfatredirect") {
+        if ($payment && $payment->oxpayments__oxid->value == Payment::FATREDIRECT) {
 
             $order = $this->fcGetOrder();
             if (!$order) {

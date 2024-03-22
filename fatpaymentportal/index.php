@@ -4,7 +4,7 @@ include "autoload.php";
 
 session_start();
 
-saveRequestParamsToSession(['redirect', 'cancelRedirect', 'checkoutPrice', 'data']);
+saveRequestParamsToSession(['redirect', 'cancelRedirect', 'id']);
 
 $controllerName = "Checkout";
  if (isset($_REQUEST['controller'])) {
@@ -36,7 +36,7 @@ if (isset($_REQUEST['action'])) {
 
  if (!file_exists($viewPath)) {
      $errorMessage = "Template not found!";
-     include "error.php";
+     include "views/error.php";
      exit;
  }
 

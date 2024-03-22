@@ -1,10 +1,12 @@
 <?php
 
-namespace Src;
+namespace FatPayApi;
+
+use mysqli;
 
 class TransactionGateway
 {
-    protected $connection;
+    protected mysqli $connection;
 
     public function __construct($database)
     {
@@ -13,7 +15,8 @@ class TransactionGateway
 
     public function create(array $data)
     {
-        $sql = "INSERT INTO transactions (
+        $sql = "INSERT INTO ".Config::TABLENAME." (
+                    id,      
                     status,
                     errormessage,
                     payment_type,
@@ -39,12 +42,15 @@ class TransactionGateway
                     amount,
                     currency
                 )
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         $stmt = $this->connection->prepare($sql);
 
+        $id = uniqid("FC");
+
         $stmt->bind_param(
-            'ssssssssssssssssssssssds',
+            'sssssssssssssssssssssssds',
+            $id,
             $data['status'],
             $data['errormessage'],
             $data['payment_type'],
@@ -73,6 +79,15 @@ class TransactionGateway
 
         $stmt->execute();
 
-        return $this->connection->insert_id;
+        return $id;
+    }
+
+    public function get(string $id)
+    {
+        $sql = "SELECT * FROM transactions WHERE id = '$id'";
+
+        $result = $this->connection->query($sql);
+
+        return $result->fetch_assoc();
     }
 }

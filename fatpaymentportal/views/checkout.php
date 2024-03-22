@@ -1,3 +1,4 @@
+<?php /** @var CheckoutController $controller */ ?>
 <div class="row h-100">
     <div class="hidden-xs col-1 col-md-2 col-lg-3 col-xxl-4"></div>
     <div class="col h-100 p-0">
@@ -10,7 +11,7 @@
                     </div>
                     <div class="col-auto ps-1 text-end">
                         <i class="bi bi-bag fs-2"></i>
-                        <p class="fs-3 d-inline"><?= $controller->getCheckoutPrice(); ?></p>
+                        <p class="fs-3 d-inline"><?= $controller->getData('checkoutPrice') ?></p>
                     </div>
                 </div>
                 <hr style="color: #4f4f4f">
@@ -25,7 +26,7 @@
                     <hr style="color: #4f4f4f">
                     <div class="row">
                         <div class="col">
-                            <button onclick='submitPayment("<?= $controller->getRedirectToStore()?>",<?=$controller->getData()?>)' class="btn fw-bold w-100" id="payButton" style="background-color: #FF6600; color: white">
+                            <button onclick='submitPayment("<?= $controller->getRedirectToStore()?>")' class="btn fw-bold w-100" id="payButton" style="background-color: #FF6600; color: white">
                                 <div id="payButtonText" style="display: block">Pay Now</div>
                                 <div class="justify-content-end" style="width: calc(50% + 12px)"><div class="loader float-end" id="loader" style="display: none;"></div></div>
                             </button>
